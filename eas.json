@@ -1,0 +1,44 @@
+{
+  "cli": {
+    "version": ">= 16.24.1",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development-simulator": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "NODE_ENV": "development",
+        "API_URL": "http://localhost:3000/api/v1"
+      }
+    },
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "NODE_ENV": "development",
+        "API_URL": "http://localhost:3000/api/v1"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "NODE_ENV": "development",
+        "API_URL": "http://localhost:3000/api/v1"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "NODE_ENV": "production",
+        "API_URL": "https://api.myapp.com/api/v1"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
