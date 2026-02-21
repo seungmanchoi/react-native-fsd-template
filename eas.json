@@ -33,7 +33,6 @@
     "production": {
       "autoIncrement": true,
       "env": {
-        "NODE_ENV": "production",
         "API_URL": "https://api.myapp.com/api/v1"
       }
     }
