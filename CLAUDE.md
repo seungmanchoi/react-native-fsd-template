@@ -72,6 +72,7 @@ features/{name}/
 ## Code Conventions
 
 - No `any` type in production code
+- Safe area handling is mandatory for all screens (use `SafeAreaView` / `react-native-safe-area-context`)
 - Interface prefix: `I`, Type prefix: `T`, Enum prefix: `E`
 - Separate files for interfaces, types, enums
 - Use `@/` alias for imports
