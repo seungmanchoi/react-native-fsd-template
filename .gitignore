@@ -30,8 +30,3 @@ android/
 
 # Screenshots (keep in repo for store deployment)
 !screenshots/**
-
-# EAS
-
-# Claude Code skills (cloned repos)
-.claude/skills/

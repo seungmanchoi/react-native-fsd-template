@@ -6,6 +6,13 @@
 </p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/Claude_Code-Harness-purple?style=for-the-badge&logo=anthropic&logoColor=white" />
+  <img src="https://img.shields.io/badge/Agents-4_Specialists-blueviolet?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Skills-4_Workflows-green?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Pattern-Pipeline-yellow?style=for-the-badge" />
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Expo_Router-6-000020?style=flat-square&logo=expo&logoColor=white" />
   <img src="https://img.shields.io/badge/Zustand-5-433E38?style=flat-square&logo=zustand&logoColor=white" />
   <img src="https://img.shields.io/badge/TanStack_Query-5-FF4154?style=flat-square&logo=reactquery&logoColor=white" />
@@ -30,9 +37,52 @@
   <img src="https://img.shields.io/badge/node-%3E%3D18-339933?style=flat-square&logo=nodedotjs&logoColor=white" />
 </p>
 
-# React Native FSD Template
+# React Native FSD Agent Template
 
-Production-ready React Native + Expo template with **Feature-Sliced Design (FSD)** architecture.
+Production-ready React Native + Expo template with **Feature-Sliced Design (FSD)** architecture and **AI Agent Harness** for Claude Code.
+
+> **What makes this different?** This template includes pre-configured Claude Code agents and skills that understand FSD architecture rules. When you say "make a product feature", the agent team automatically scaffolds the correct directory structure, writes type-safe API hooks, creates screens with SafeArea handling, and validates everything against FSD dependency rules.
+
+## AI Agent Harness
+
+This template ships with a **4-agent pipeline harness** that enforces FSD architecture rules automatically.
+
+### Agent Team
+
+| Agent | Role | Trigger |
+|-------|------|---------|
+| **feature-builder** | FSD module scaffolding | "feature/entity/widget make" |
+| **api-integrator** | Axios + TanStack Query + Zustand | "API/store setup" |
+| **ui-developer** | NativeWind screens & components | "screen/UI make" |
+| **qa-reviewer** | Lint, typecheck, FSD rule validation | Auto after each step |
+
+### Skills
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| `create-feature` | "create feature {name}" | FSD feature scaffolding |
+| `create-entity` | "create entity {name}" | Domain model scaffolding |
+| `create-screen` | "create screen {name}" | Expo Router screen |
+| `orchestrate` | "build full-stack feature" | End-to-end pipeline |
+
+### Pipeline Architecture
+
+```
+feature-builder → api-integrator → ui-developer → qa-reviewer
+     (types)        (API + hooks)     (screens)     (validate)
+```
+
+### Harness Workflow
+
+```
+Phase 1: Domain Analysis          — Analyze requirements
+Phase 2: Team Architecture        — Select agent pattern
+Phase 3: Agent Definitions        — .claude/agents/
+Phase 4: Skill Generation         — .claude/skills/
+Phase 5: Orchestration            — Pipeline coordination
+Phase 6: Verification & Testing   — QA validation
+Phase 7: Store Deployment         — /store-deploy integration
+```
 
 ## Tech Stack
 
@@ -60,7 +110,7 @@ Production-ready React Native + Expo template with **Feature-Sliced Design (FSD)
 GitHub에서 **"Use this template"** 버튼을 클릭하거나:
 
 ```bash
-gh repo create my-app --template seungmanchoi/react-native-fsd-template --clone
+gh repo create my-app --template seungmanchoi/react-native-fsd-agent-template --clone
 cd my-app
 ```
 
@@ -86,17 +136,41 @@ npm run ios        # iOS Simulator
 npm run android    # Android Emulator
 ```
 
+### 5. Use Agent Harness (Claude Code)
+
+```bash
+# Claude Code에서 자연어로 명령
+"상품 목록/상세 기능을 만들어줘. API는 /products 엔드포인트"
+
+# → feature-builder: src/features/product/ 스캐폴딩
+# → api-integrator: API 함수 + useProducts 훅 생성
+# → ui-developer: 상품 리스트/상세 스크린 생성
+# → qa-reviewer: FSD 규칙 + 타입 검증
+```
+
 ## Project Structure
 
 ```
 .
+├── .claude/
+│   ├── agents/                     # AI Agent definitions
+│   │   ├── feature-builder.md      # FSD module scaffolding
+│   │   ├── ui-developer.md         # UI/Screen development
+│   │   ├── api-integrator.md       # API + state management
+│   │   └── qa-reviewer.md          # Quality assurance
+│   └── skills/                     # AI Skills
+│       ├── create-feature/         # Feature scaffolding skill
+│       ├── create-entity/          # Entity scaffolding skill
+│       ├── create-screen/          # Screen creation skill
+│       └── orchestrate/            # Pipeline orchestration
+│
 ├── app/                            # Expo Router (file-based routing)
 │   ├── _layout.tsx                 # Root layout (providers)
 │   ├── (auth)/                     # Auth group (unauthenticated)
 │   │   ├── _layout.tsx
 │   │   └── login.tsx
 │   └── (tabs)/                     # Tab group (authenticated)
-│       ├── _layout.tsx             # Bottom tabs (Home, Explore, Profile)
+│       ├── _layout.tsx             # Bottom tabs
 │       ├── index.tsx
 │       ├── explore.tsx
 │       └── profile.tsx
@@ -127,19 +201,14 @@ npm run android    # Android Emulator
 │       ├── lib/                    # Custom hooks, utils
 │       ├── types/                  # Common types
 │       └── ui/                     # UI components
-│           ├── Button.tsx
-│           ├── Card.tsx
-│           ├── Input.tsx
-│           ├── Typography.tsx
-│           ├── ErrorBoundary.tsx
-│           └── Toast/
 │
 ├── app.config.ts                   # Expo config (dynamic)
 ├── tailwind.config.js              # NativeWind/Tailwind config
 ├── tsconfig.json                   # TypeScript (path aliases)
 ├── .eslintrc.js                    # ESLint rules
 ├── .prettierrc.js                  # Prettier rules
-└── eas.json                        # EAS Build profiles
+├── eas.json                        # EAS Build profiles
+└── CLAUDE.md                       # Claude Code instructions
 ```
 
 ## FSD Architecture
@@ -174,22 +243,6 @@ src/features/my-feature/
 │   ├── MyComponent.tsx
 │   └── index.ts
 └── index.ts                     # Public API (barrel export)
-```
-
-### Adding a New Entity
-
-```
-src/entities/my-entity/
-├── api/
-│   ├── my-entity.api.ts
-│   └── index.ts
-├── store/
-│   ├── my-entity.store.ts
-│   └── index.ts
-├── types/
-│   ├── my-entity.types.ts
-│   └── index.ts
-└── index.ts
 ```
 
 ## Path Aliases

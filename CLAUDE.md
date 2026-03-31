@@ -4,7 +4,7 @@ This file provides guidance to Claude Code when working with this repository.
 
 ## Project Overview
 
-React Native + Expo template with **Feature-Sliced Design (FSD)** architecture.
+React Native + Expo template with **Feature-Sliced Design (FSD)** architecture and **AI Agent Harness** for Claude Code.
 
 ## Tech Stack
 
@@ -15,6 +15,32 @@ React Native + Expo template with **Feature-Sliced Design (FSD)** architecture.
 - **Form & Validation**: React Hook Form + Zod
 - **API**: Axios with token auto-refresh
 - **TypeScript**: Strict mode
+
+## Harness: Agent Team
+
+이 프로젝트는 4개의 전문 에이전트로 구성된 하네스를 포함합니다.
+
+| Agent | Role | File |
+|-------|------|------|
+| feature-builder | FSD 모듈 스캐폴딩 | `.claude/agents/feature-builder.md` |
+| ui-developer | UI/스크린 개발 | `.claude/agents/ui-developer.md` |
+| api-integrator | API 연동/상태관리 | `.claude/agents/api-integrator.md` |
+| qa-reviewer | 품질 검증 | `.claude/agents/qa-reviewer.md` |
+
+### Skills
+
+| Skill | Trigger | File |
+|-------|---------|------|
+| create-feature | "피처 만들어줘" | `.claude/skills/create-feature/SKILL.md` |
+| create-entity | "엔티티 만들어줘" | `.claude/skills/create-entity/SKILL.md` |
+| create-screen | "스크린 추가해줘" | `.claude/skills/create-screen/SKILL.md` |
+| orchestrate | "풀스택으로 만들어줘" | `.claude/skills/orchestrate/SKILL.md` |
+
+### Pipeline Pattern
+
+```
+feature-builder → api-integrator → ui-developer → qa-reviewer
+```
 
 ## Branch Strategy
 
