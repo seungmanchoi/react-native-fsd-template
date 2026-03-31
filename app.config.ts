@@ -26,7 +26,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       output: 'static',
     },
     ios: {
-      supportsTablet: true,
+      supportsTablet: false,
       bundleIdentifier: 'com.myapp.app',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,

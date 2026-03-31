@@ -17,7 +17,7 @@
       "output": "static"
     },
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.myapp.app"
     },
     "android": {
