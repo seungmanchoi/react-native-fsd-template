@@ -10,6 +10,8 @@
   <img src="https://img.shields.io/badge/Agents-8_Specialists-blueviolet?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Skills-8_Workflows-green?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Pattern-Pipeline-yellow?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Vibe_Coding-AI_Driven-ff69b4?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Harness_Engineering-Production-red?style=for-the-badge" />
 </p>
 
 <p align="center">
