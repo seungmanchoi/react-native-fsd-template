@@ -39,6 +39,20 @@ React Native + Expo template with **Feature-Sliced Design (FSD)** architecture a
 | FSD 레이어 의존성 위반 | **0개** |
 | SafeAreaView 누락 (스크린) | **0개** |
 | barrel export 누락 | **0개** |
+| NativeWind 설정 누락 | **0개** |
+
+### NativeWind 필수 설정 (CRITICAL)
+
+NativeWind가 정상 동작하려면 아래 4개 파일이 **모두** 올바르게 설정되어야 한다. 하나라도 누락되면 `className`이 적용되지 않아 전체 UI가 깨진다.
+
+| 파일 | 필수 설정 |
+|------|----------|
+| `babel.config.js` | `presets`에 `['babel-preset-expo', { jsxImportSource: 'nativewind' }]`와 `'nativewind/babel'` 포함 |
+| `metro.config.js` | `withNativeWind(config, { input: './global.css' })` |
+| `tailwind.config.js` | `presets: [require('nativewind/preset')]` 및 `content` 경로에 `app/`, `src/` 포함 |
+| `global.css` | `@tailwind base; @tailwind components; @tailwind utilities;` |
+| `_layout.tsx` (루트) | `import '../global.css';` |
+| `nativewind-env.d.ts` | `/// <reference types="nativewind/types" />` |
 
 ### 에이전트 활용 매핑
 

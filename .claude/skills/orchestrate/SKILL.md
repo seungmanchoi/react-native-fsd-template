@@ -130,6 +130,14 @@ Tasks:
 
 ```
 Tasks:
+0. NativeWind 설정 무결성 검증 (GATE — 통과 필수)
+   - babel.config.js: jsxImportSource + nativewind/babel 프리셋
+   - metro.config.js: withNativeWind 래핑
+   - tailwind.config.js: nativewind/preset + content 경로
+   - global.css: @tailwind 디렉티브
+   - 루트 _layout.tsx: global.css import
+   - nativewind-env.d.ts: 타입 레퍼런스
+   → 누락 시 즉시 수정 후 다음 Task 진행
 1. NativeWind 커스텀 테마 설계 (colors, typography, spacing)
 2. 공통 UI 컴포넌트 스펙 정의
 3. 각 스크린 레이아웃 와이어프레임 (텍스트 기반)

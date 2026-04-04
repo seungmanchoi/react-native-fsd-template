@@ -18,6 +18,32 @@ description: "앱 디자인 시스템을 설계하고 NativeWind/Tailwind 코드
 
 ## Steps
 
+### Step 0: NativeWind 설정 검증 (GATE — 통과해야 다음 스텝 진행)
+
+디자인 시스템을 정의하기 전에 NativeWind가 올바르게 설정되었는지 검증한다.
+이 설정이 누락되면 `className`이 전혀 작동하지 않아 **모든 디자인 작업이 무의미**하다.
+
+```
+검증 항목 (모두 PASS 필수):
+1. babel.config.js
+   - presets에 ['babel-preset-expo', { jsxImportSource: 'nativewind' }] 존재 여부
+   - presets에 'nativewind/babel' 존재 여부
+2. metro.config.js
+   - withNativeWind(config, { input: './global.css' }) 래핑 여부
+3. tailwind.config.js
+   - presets: [require('nativewind/preset')] 존재 여부
+   - content에 app/, src/ 경로 포함 여부
+4. global.css
+   - @tailwind base; @tailwind components; @tailwind utilities; 존재 여부
+5. 루트 _layout.tsx
+   - import '../global.css'; 존재 여부
+6. nativewind-env.d.ts
+   - /// <reference types="nativewind/types" /> 존재 여부
+```
+
+- **FAIL 시**: 누락된 설정을 즉시 수정하고 다음 스텝으로 진행
+- **수정 후**: Metro 캐시 클리어 필요 (`npx expo start -c`)
+
 ### Step 1: 브랜드 톤 결정
 - 앱 성격에 맞는 시각적 방향성 3가지 옵션 제시
   - 예: "미니멀 & 클린" / "따뜻한 & 친근" / "대담한 & 에너제틱"

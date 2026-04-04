@@ -24,6 +24,23 @@ NativeWind(Tailwind CSS) 기반의 React Native UI 컴포넌트 및 스크린을
 - 리스트 렌더링 시 FlashList 우선 사용
 - Bottom Sheet는 `@gorhom/bottom-sheet` 사용
 
+## NativeWind 전제조건 (UI 작업 전 필수 확인)
+
+UI 컴포넌트/스크린 개발을 시작하기 전, NativeWind `className`이 정상 작동하는지 확인한다.
+아래 설정 중 하나라도 누락되면 **className이 전혀 적용되지 않아 모든 스타일이 무시된다**.
+
+```
+필수 설정 체크:
+✅ babel.config.js — presets에 ['babel-preset-expo', { jsxImportSource: 'nativewind' }] + 'nativewind/babel'
+✅ metro.config.js — withNativeWind(config, { input: './global.css' })
+✅ tailwind.config.js — presets: [require('nativewind/preset')], content 경로 포함
+✅ global.css — @tailwind base/components/utilities
+✅ 루트 _layout.tsx — import '../global.css'
+✅ nativewind-env.d.ts — /// <reference types="nativewind/types" />
+```
+
+누락 발견 시 즉시 수정 후 작업을 진행한다.
+
 ## Tech Stack
 
 | Library | Usage |

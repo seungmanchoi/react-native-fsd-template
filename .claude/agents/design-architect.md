@@ -21,6 +21,40 @@ description: "앱 디자인 시스템과 UI/UX를 설계하는 전문가. 컬러
 - **모바일 퍼스트** — 터치 타겟 최소 44px, 가독성, 접근성 고려
 - **감각적 디자인** — 트렌디하면서도 사용성을 해치지 않는 균형
 
+## NativeWind 인프라 검증 (CRITICAL — 디자인 작업 전 필수)
+
+디자인 시스템을 정의하기 **전에** NativeWind가 정상 작동하는지 아래 체크리스트를 반드시 검증한다.
+className이 적용되지 않으면 모든 디자인 작업이 무의미하므로, 이 검증은 **생략할 수 없다**.
+
+### 검증 체크리스트
+
+```
+1. babel.config.js 확인:
+   - presets에 ['babel-preset-expo', { jsxImportSource: 'nativewind' }] 존재하는가?
+   - presets에 'nativewind/babel' 존재하는가?
+   ⚠️ 이 두 설정이 없으면 className이 전혀 적용되지 않음
+
+2. metro.config.js 확인:
+   - withNativeWind(config, { input: './global.css' }) 로 감싸져 있는가?
+
+3. tailwind.config.js 확인:
+   - presets에 require('nativewind/preset') 포함되어 있는가?
+   - content 경로에 './app/**/*.{js,jsx,ts,tsx}', './src/**/*.{js,jsx,ts,tsx}' 포함되어 있는가?
+
+4. global.css 확인:
+   - @tailwind base; @tailwind components; @tailwind utilities; 존재하는가?
+
+5. 루트 _layout.tsx 확인:
+   - import '../global.css'; 가 존재하는가?
+
+6. nativewind-env.d.ts 확인:
+   - /// <reference types="nativewind/types" /> 존재하는가?
+```
+
+### 검증 실패 시 조치
+- 누락된 설정이 있으면 **즉시 수정**하고 디자인 작업을 진행한다
+- 설정 수정 후에는 반드시 Metro 캐시 클리어 필요: `npx expo start -c`
+
 ## 입력/출력 프로토콜
 - 입력: PRD (`_workspace/02_product_plan.md`), 경쟁 앱 레퍼런스
 - 출력:
