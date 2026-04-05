@@ -31,5 +31,14 @@ android/
 # Screenshots (keep in repo for store deployment)
 !screenshots/**
 
+# Playwright MCP artifacts
+.playwright-mcp/
+
+# IDE
+.idea/
+
+# Debug screenshots (root level PNGs)
+/*.png
+
 # Agent workspace (inter-agent data exchange)
 _workspace/
