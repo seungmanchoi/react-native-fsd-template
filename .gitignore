@@ -41,4 +41,5 @@ android/
 /*.png
 
 # Agent workspace (inter-agent data exchange)
-_workspace/
+_workspace/*.ipa
+*.aab
