@@ -26,6 +26,60 @@
 
 ---
 
+## Supervisor 메커니즘
+
+orchestrate 스킬 자체가 **수퍼바이저** 역할을 한다. 수퍼바이저는 다음을 책임진다:
+
+### 1. 파이프라인 상태 추적
+
+`_workspace/pipeline-status.md`를 생성하고 매 Phase 전환 시 업데이트한다:
+
+```markdown
+# Pipeline Status
+
+## Current Phase: {phase_number}
+## Started: {timestamp}
+## Last Updated: {timestamp}
+
+| Phase | Status | Agent | Started | Completed | Notes |
+|-------|--------|-------|---------|-----------|-------|
+| 1. Ideation | COMPLETED | idea-researcher | ... | ... | |
+| 2. Planning | COMPLETED | product-planner | ... | ... | |
+| 2.5 Spec | IN_PROGRESS | spec-planner | ... | | |
+| 3. Design | PENDING | | | | |
+| 4a. Features | PENDING | | | | |
+| 4a-QA | PENDING | qa-reviewer | | | Quick QA |
+| 4b. API | PENDING | | | | |
+| 4b-QA | PENDING | qa-reviewer | | | Quick QA |
+| 4c. UI | PENDING | | | | |
+| 4c-QA | PENDING | qa-reviewer | | | Quick QA |
+| 5. QA | PENDING | qa-reviewer + app-inspector | | | Full QA |
+| 6. Iteration | PENDING | | | | Max 3 loops |
+| 7. Deploy | PENDING | | | | |
+```
+
+### 2. Phase 전환 Go/No-Go 판단
+
+각 Phase 완료 시 수퍼바이저가 **Go/No-Go**를 판단한다:
+
+```
+Go 조건:
+- 해당 Phase의 산출물이 _workspace/{phase}/ 에 존재
+- Quick QA(typecheck + lint) PASS (Phase 4 서브스텝)
+- Error Escalation 없음
+
+No-Go 조건:
+- 산출물 누락 → 해당 Phase 재실행
+- Quick QA FAIL → 수정 후 재검증 (최대 2회)
+- 사용자 블로킹 이슈 → error.md 작성 후 대기
+```
+
+### 3. 컨텍스트 리셋 시 재개
+
+컨텍스트가 리셋되었을 때, `_workspace/pipeline-status.md`를 읽어 마지막 COMPLETED Phase 다음부터 재개한다.
+
+---
+
 ## Workspace
 
 모든 에이전트는 `_workspace/` 디렉토리를 통해 데이터를 주고받는다.
@@ -145,6 +199,15 @@ Tasks:
 
 **Error Handling**: PRD가 불충분하면 사용자에게 핵심 기능 3개를 확인 후 진행.
 
+**Spec 검증 (Go/No-Go)**:
+스펙 생성 후 수퍼바이저가 검증한다:
+- [ ] `docs/specs/README.md` 대시보드가 존재하는가
+- [ ] 모든 PRD feature에 대응하는 spec 디렉토리가 있는가
+- [ ] 각 phase 파일에 최소 1개 이상의 task가 있는가
+- [ ] task 형식이 `- [ ] \`파일경로\` — 설명` 패턴을 따르는가
+
+검증 FAIL 시 spec-planner에게 수정 요청 후 재검증.
+
 ---
 
 ### Phase 3: Design — `design-architect`
@@ -231,6 +294,16 @@ features/{name}/
 
 **Error Handling**: 타입 충돌 발생 시 `shared/types/`에 공통 타입 추출.
 
+**Quick QA Checkpoint (4a-QA)**:
+Phase 4a 완료 후 qa-reviewer가 경량 검증을 실행한다:
+```bash
+npm run typecheck && npm run lint
+```
+- PASS → Phase 4b 진행, `_workspace/pipeline-status.md` 업데이트
+- FAIL → feature-builder에게 수정 요청 (최대 2회 재시도)
+
+---
+
 #### Phase 4b: API Integrator — `api-integrator`
 
 **에이전트**: `api-integrator`
@@ -260,6 +333,16 @@ axiosInstance.interceptors.response.use(
 ```
 
 **Error Handling**: API 스펙 미정 시 RESTful 컨벤션으로 목 엔드포인트 생성.
+
+**Quick QA Checkpoint (4b-QA)**:
+Phase 4b 완료 후 qa-reviewer가 경량 검증을 실행한다:
+```bash
+npm run typecheck && npm run lint
+```
+- PASS → Phase 4c 진행
+- FAIL → api-integrator에게 수정 요청 (최대 2회 재시도)
+
+---
 
 #### Phase 4c: UI Developer — `ui-developer`
 
@@ -293,6 +376,14 @@ export default function Screen() {
 ```
 
 **Error Handling**: 레이아웃 명세 누락 시 기본 FlatList + Empty State 패턴 적용.
+
+**Quick QA Checkpoint (4c-QA)**:
+Phase 4c 완료 후 qa-reviewer가 경량 검증을 실행한다:
+```bash
+npm run typecheck && npm run lint
+```
+- PASS → Phase 5 진행
+- FAIL → ui-developer에게 수정 요청 (최대 2회 재시도)
 
 ---
 
@@ -407,10 +498,10 @@ Tasks:
              │ _workspace/design/
              ▼
 ┌──────────────────────────────────────────────┐
-│  Phase 4: Implementation (순차 + spec 체크)  │
-│  4a feature-builder (/create-feature/entity) │
-│     → 4b api-integrator                      │
-│        → 4c ui-developer (/create-screen)    │
+│  Phase 4: Implementation (순차 + Quick QA)   │
+│  4a feature-builder → 4a-QA (typecheck+lint) │
+│     → 4b api-integrator → 4b-QA             │
+│        → 4c ui-developer → 4c-QA            │
 └────────────┬─────────────────────────────────┘
              │ src/, app/
              ▼

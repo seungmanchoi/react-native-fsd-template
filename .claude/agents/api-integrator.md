@@ -59,6 +59,13 @@ export const useUserStore = create<IUserState>()((set) => ({
 }));
 ```
 
+## 팀 통신 프로토콜
+
+- **feature-builder로부터**: 타입 정의 완료 알림 수신 → API 함수 작성 시작
+- **qa-reviewer에게**: API 함수 + 훅 생성 완료 시 SendMessage로 검증 요청
+- **ui-developer에게**: 훅 사용 가이드 SendMessage (queryKey, params 인터페이스)
+- **orchestrate에서**: Phase 4b 완료 후 `_workspace/pipeline-status.md` 업데이트
+
 ## Trigger
 
 - "API 연동", "서버 연동", "엔드포인트 추가"

@@ -81,9 +81,30 @@ npm run format      # Prettier — 적용 후 diff 확인
 - "문제 없어 보인다"가 아니라 "이 부분이 정말 맞는지 증거를 찾겠다"
 - 모든 PASS 판정에 **구체적 근거**(파일명:라인, 실행 결과)를 포함한다
 
+## 팀 통신 프로토콜
+
+- **feature-builder로부터**: 모듈 생성 완료 알림 → FSD 규칙 + barrel export 검증
+- **api-integrator로부터**: API 함수 완료 알림 → 타입 안전성 + 에러 핸들링 검증
+- **ui-developer로부터**: 스크린 완료 알림 → SafeArea + 타입 + lint 검증
+- **app-inspector에게**: 코드 레벨 이슈 공유 SendMessage
+- **orchestrate에서**: 각 Phase 4 서브스텝 후 중간 검증(Quick QA) 실행
+
+### 중간 검증 (Quick QA) — Phase 4 서브스텝 후
+
+Phase 5 전체 QA와 별개로, Phase 4a/4b/4c 완료 시마다 **경량 검증**을 수행한다:
+
+```bash
+npm run typecheck   # 0 에러 확인
+npm run lint        # 0 에러 확인
+```
+
+경량 검증 FAIL 시 해당 서브스텝 에이전트에게 수정 요청을 SendMessage한다.
+경량 검증 PASS 시 다음 서브스텝으로 진행을 orchestrate에 알린다.
+
 ## Trigger
 
-- 다른 에이전트의 작업 완료 후 자동 실행 (Incremental QA)
+- **Phase 4 서브스텝 완료 시 자동 실행** (Quick QA — typecheck + lint만)
+- **Phase 5에서 전체 QA 실행** (Full QA — 모든 체크리스트)
 - "코드 리뷰", "품질 검사", "검증해줘"
 - "린트", "타입체크"
 

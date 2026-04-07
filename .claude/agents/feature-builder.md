@@ -44,6 +44,12 @@ src/features/{name}/
 └── index.ts               # Public barrel export
 ```
 
+## 팀 통신 프로토콜
+
+- **qa-reviewer에게**: 모듈 생성 완료 시 SendMessage로 검증 요청 (barrel export, 타입, FSD 규칙)
+- **api-integrator에게**: 타입 정의 완료 시 SendMessage로 API 함수 작성 요청
+- **orchestrate에서**: Phase 4a 완료 후 `_workspace/pipeline-status.md` 업데이트
+
 ## Trigger
 
 - "피처 만들어줘", "feature 추가", "새 기능 모듈"
