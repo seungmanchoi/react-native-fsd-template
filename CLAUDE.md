@@ -168,6 +168,24 @@ build-output/
 | ProGuard/R8 (Android) | 자동 적용됨, 매핑 파일 경고 무시 가능 | 코드 크기 감소 |
 | Bitcode (iOS) | Expo managed에서 자동 처리 | - |
 
+### 앱 이름 일관성 (MANDATORY)
+
+스토어에 표시되는 앱 이름과 기기 홈 화면에 표시되는 앱 이름을 반드시 일치시킨다.
+
+| 항목 | 설정 위치 | 설명 |
+|------|----------|------|
+| 홈 화면 이름 | `app.config.ts` → `withLocalizedAppName` plugin | 기기 언어별 앱 이름 |
+| iOS 스토어 이름 | `fastlane/metadata/ios/{lang}/name.txt` | ASC에 표시되는 이름 |
+| Android 스토어 이름 | `fastlane/metadata/android/{lang}/title.txt` | Play Store에 표시되는 이름 |
+| 기본 이름 | `app.config.ts` → `name` | 홈 화면 기본 언어 이름과 동일해야 함 |
+
+**규칙:**
+- 위 4곳의 앱 이름이 언어별로 모두 동일해야 한다
+- 앱 이름 변경 시 4곳 모두 동시에 변경한다
+- 홈 화면 이름은 길면 잘리므로 30자 이내로 설정 (스토어 이름 제한과 동일)
+- `withLocalizedAppName` plugin (`plugins/withLocalizedAppName.js`)은 prebuild 시 iOS `InfoPlist.strings`와 Android `values-{locale}/strings.xml`을 자동 생성
+- plugin이 Xcode 프로젝트의 `PBXVariantGroup`에 파일을 등록해야 빌드에 포함됨
+
 ### 배포 전 필수 준비 항목
 
 | 항목 | 설명 |

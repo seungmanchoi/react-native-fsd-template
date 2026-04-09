@@ -2,8 +2,18 @@
  * Expo Config Plugin: Localized App Name
  *
  * iOS: Generates InfoPlist.strings with CFBundleDisplayName per language
- *      AND registers them in the Xcode project as variant group resources
+ *      and registers them in the Xcode project as a variant group.
  * Android: Generates strings.xml with app_name per language in values-{locale}/
+ *
+ * Usage in app.config.ts:
+ *   plugins: [
+ *     ['./plugins/withLocalizedAppName', {
+ *       en: 'QR Scan & Create',
+ *       ko: 'QR 스캔 & 생성',
+ *       ja: 'QRスキャン&作成',
+ *       ...
+ *     }],
+ *   ]
  */
 
 const {
@@ -95,23 +105,20 @@ function withLocalizedAppNameIOS(config, localizedNames) {
     },
   ]);
 
-  // Step 2: Register InfoPlist.strings as variant group in Xcode project
+  // Step 2: Add InfoPlist.strings as variant group to Xcode project
   config = withXcodeProject(config, (config) => {
     const project = config.modResults;
-    const projectName = IOSConfig.XcodeUtils.getProjectName(
-      config.modRequest.projectRoot
-    );
-
-    // Collect all locale codes
-    const locales = Object.entries(localizedNames).map(
-      ([locale]) => IOS_LOCALE_MAP[locale] || locale
-    );
+    const projectName = config.modRequest.projectName;
 
     // Add known regions
+    const locales = Object.keys(localizedNames).map(
+      (l) => IOS_LOCALE_MAP[l] || l
+    );
+
     try {
       const pbxProject = project.getFirstProject();
       if (pbxProject && pbxProject.firstProject) {
-        const knownRegions = pbxProject.firstProject.knownRegions || ['en', 'Base'];
+        const knownRegions = pbxProject.firstProject.knownRegions || [];
         for (const locale of locales) {
           if (!knownRegions.includes(locale)) {
             knownRegions.push(locale);
@@ -125,102 +132,114 @@ function withLocalizedAppNameIOS(config, localizedNames) {
 
     // Create variant group for InfoPlist.strings and add to Resources build phase
     try {
+      // Find the project name group (e.g. QRScanCreate) to add files under it
+      const groups = project.hash.project.objects['PBXGroup'] || {};
+      let projectGroupKey = null;
+      for (const [key, value] of Object.entries(groups)) {
+        if (value && value.name === projectName && !key.endsWith('_comment')) {
+          projectGroupKey = key;
+          break;
+        }
+        // Also check path-based groups
+        if (value && value.path === projectName && !key.endsWith('_comment')) {
+          projectGroupKey = key;
+          break;
+        }
+      }
+
       // Check if variant group already exists
       const variantGroups = project.hash.project.objects['PBXVariantGroup'] || {};
       let existingGroupKey = null;
-
       for (const [key, value] of Object.entries(variantGroups)) {
-        if (typeof value === 'object' && value.name === 'InfoPlist.strings') {
+        if (value && value.name === 'InfoPlist.strings') {
           existingGroupKey = key;
           break;
         }
       }
 
       if (!existingGroupKey) {
-        // Create variant group with all locale files
-        const variantGroupChildren = [];
+        const variantGroupKey = project.generateUuid();
+        const variantGroupCommentKey = `${variantGroupKey}_comment`;
 
+        const children = [];
         for (const locale of locales) {
-          const fileRefUuid = project.generateUuid();
-          const filePath = `${projectName}/${locale}.lproj/InfoPlist.strings`;
+          const fileRefKey = project.generateUuid();
+          const fileRefCommentKey = `${fileRefKey}_comment`;
 
-          // Add file reference
-          project.hash.project.objects['PBXFileReference'] =
-            project.hash.project.objects['PBXFileReference'] || {};
-          project.hash.project.objects['PBXFileReference'][fileRefUuid] = {
+          if (!project.hash.project.objects['PBXFileReference']) {
+            project.hash.project.objects['PBXFileReference'] = {};
+          }
+          project.hash.project.objects['PBXFileReference'][fileRefKey] = {
             isa: 'PBXFileReference',
             lastKnownFileType: 'text.plist.strings',
             name: locale,
-            path: filePath,
+            path: `${projectName}/${locale}.lproj/InfoPlist.strings`,
             sourceTree: '"<group>"',
           };
-          project.hash.project.objects['PBXFileReference'][`${fileRefUuid}_comment`] = locale;
+          project.hash.project.objects['PBXFileReference'][fileRefCommentKey] =
+            `${locale} — InfoPlist.strings`;
 
-          variantGroupChildren.push({
-            value: fileRefUuid,
-            comment: locale,
+          children.push({
+            value: fileRefKey,
+            comment: `${locale} — InfoPlist.strings`,
           });
         }
 
-        // Create variant group
-        const variantGroupUuid = project.generateUuid();
-        project.hash.project.objects['PBXVariantGroup'] =
-          project.hash.project.objects['PBXVariantGroup'] || {};
-        project.hash.project.objects['PBXVariantGroup'][variantGroupUuid] = {
+        if (!project.hash.project.objects['PBXVariantGroup']) {
+          project.hash.project.objects['PBXVariantGroup'] = {};
+        }
+        project.hash.project.objects['PBXVariantGroup'][variantGroupKey] = {
           isa: 'PBXVariantGroup',
-          children: variantGroupChildren,
+          children: children,
           name: 'InfoPlist.strings',
           sourceTree: '"<group>"',
         };
-        project.hash.project.objects['PBXVariantGroup'][`${variantGroupUuid}_comment`] =
+        project.hash.project.objects['PBXVariantGroup'][variantGroupCommentKey] =
           'InfoPlist.strings';
 
-        // Add variant group to main group
+        // Add to the main group (top-level)
         const mainGroupKey = project.getFirstProject().firstProject.mainGroup;
-        const mainGroup = project.hash.project.objects['PBXGroup'][mainGroupKey];
+        const mainGroup = groups[mainGroupKey];
         if (mainGroup && mainGroup.children) {
-          // Find the project name group
-          for (const child of mainGroup.children) {
-            const childGroup =
-              project.hash.project.objects['PBXGroup'][child.value];
-            if (childGroup && childGroup.name === projectName) {
-              childGroup.children.push({
-                value: variantGroupUuid,
-                comment: 'InfoPlist.strings',
-              });
-              break;
-            }
-            // Also check path-based groups
-            if (childGroup && childGroup.path === projectName) {
-              childGroup.children.push({
-                value: variantGroupUuid,
-                comment: 'InfoPlist.strings',
-              });
-              break;
-            }
-          }
+          mainGroup.children.push({
+            value: variantGroupKey,
+            comment: 'InfoPlist.strings',
+          });
         }
 
-        // Add to Resources build phase
-        const buildPhases = project.hash.project.objects['PBXResourcesBuildPhase'] || {};
-        for (const [, phase] of Object.entries(buildPhases)) {
-          if (typeof phase === 'object' && phase.files) {
-            const buildFileUuid = project.generateUuid();
-            project.hash.project.objects['PBXBuildFile'] =
-              project.hash.project.objects['PBXBuildFile'] || {};
-            project.hash.project.objects['PBXBuildFile'][buildFileUuid] = {
-              isa: 'PBXBuildFile',
-              fileRef: variantGroupUuid,
-              fileRef_comment: 'InfoPlist.strings',
-            };
-            project.hash.project.objects['PBXBuildFile'][`${buildFileUuid}_comment`] =
-              'InfoPlist.strings in Resources';
+        // Add build file for Resources phase
+        const buildFileKey = project.generateUuid();
+        const buildFileCommentKey = `${buildFileKey}_comment`;
 
-            phase.files.push({
-              value: buildFileUuid,
-              comment: 'InfoPlist.strings in Resources',
-            });
-            break; // Only add to first Resources phase
+        if (!project.hash.project.objects['PBXBuildFile']) {
+          project.hash.project.objects['PBXBuildFile'] = {};
+        }
+        project.hash.project.objects['PBXBuildFile'][buildFileKey] = {
+          isa: 'PBXBuildFile',
+          fileRef: variantGroupKey,
+          fileRef_comment: 'InfoPlist.strings',
+        };
+        project.hash.project.objects['PBXBuildFile'][buildFileCommentKey] =
+          'InfoPlist.strings in Resources';
+
+        // Add to Resources build phase
+        const nativeTargets =
+          project.hash.project.objects['PBXNativeTarget'] || {};
+        for (const [, target] of Object.entries(nativeTargets)) {
+          if (target && target.buildPhases) {
+            for (const phase of target.buildPhases) {
+              const phaseObj =
+                project.hash.project.objects['PBXResourcesBuildPhase']?.[
+                  phase.value
+                ];
+              if (phaseObj && phaseObj.files) {
+                phaseObj.files.push({
+                  value: buildFileKey,
+                  comment: 'InfoPlist.strings in Resources',
+                });
+                break;
+              }
+            }
           }
         }
       }
@@ -240,7 +259,12 @@ function withLocalizedAppNameAndroid(config, localizedNames) {
     async (config) => {
       const projectRoot = config.modRequest.projectRoot;
       const resDir = path.join(
-        projectRoot, 'android', 'app', 'src', 'main', 'res'
+        projectRoot,
+        'android',
+        'app',
+        'src',
+        'main',
+        'res'
       );
 
       for (const [locale, name] of Object.entries(localizedNames)) {
