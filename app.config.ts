@@ -16,6 +16,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     userInterfaceStyle: 'automatic',
     scheme: 'myapp',
     icon: './assets/images/icon.png',
+    splash: {
+      image: './assets/images/splash-icon.png',
+      resizeMode: 'contain',
+      backgroundColor: '#0a0a0a',
+    },
     web: {
       bundler: 'metro',
       output: 'static',

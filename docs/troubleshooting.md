@@ -173,22 +173,9 @@ npx expo run:ios --device
 
 ## AdMob (react-native-google-mobile-ads) 설정
 
-### app.json에 AdMob 설정 추가
-
-`react-native-google-mobile-ads`의 Xcode 빌드 스크립트는 `app.json`에서 직접 설정을 읽는다.
-`app.config.ts`의 플러그인 설정과 별도로, `app.json` 루트에 다음을 추가하는 것을 권장:
-
-```json
-{
-  "expo": { ... },
-  "react-native-google-mobile-ads": {
-    "android_app_id": "ca-app-pub-xxxx~yyyy",
-    "ios_app_id": "ca-app-pub-xxxx~zzzz"
-  }
-}
-```
-
 ### app.config.ts 플러그인 설정
+
+이 템플릿은 `app.config.ts`를 Expo 설정의 단일 소스로 사용한다. `app.json`을 별도로 두면 앱 이름, bundle ID, AdMob 설정이 서로 어긋날 수 있으므로 새 설정은 `app.config.ts`에만 추가한다.
 
 ```typescript
 plugins: [
