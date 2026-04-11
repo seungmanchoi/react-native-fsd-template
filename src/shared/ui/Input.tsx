@@ -18,20 +18,20 @@ export function Input({
   ...props 
 }: IInputProps): React.JSX.Element {
   return (
-    <View style={style} className={\`w-full \${className || ''}\`}>
+    <View style={style} className={`w-full ${className || ''}`}>
       {label && (
-        <Text className={\`text-sm font-medium text-text-muted mb-1 \${labelClassName || ''}\`}>
+        <Text className={`text-sm font-medium text-text-muted mb-1 ${labelClassName || ''}`}>
           {label}
         </Text>
       )}
       <TextInput
-        className={\`
+        className={`
           bg-surface dark:bg-surface-dark 
           rounded-2xl px-4 py-3
           text-primary dark:text-primary-dark
-          border \${error ? 'border-red-500' : 'border-transparent'}
-          \${inputClassName || ''}
-        \`}
+          border ${error ? 'border-red-500' : 'border-transparent'}
+          ${inputClassName || ''}
+        `}
         placeholderTextColor="#A1A1AA"
         {...props}
       />

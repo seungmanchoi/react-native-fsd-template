@@ -22,7 +22,7 @@ export function Card({
   return (
     <View 
       style={style}
-      className={\`\${baseStyle} \${variantStyle} \${className || ''}\`}
+      className={`${baseStyle} ${variantStyle} ${className || ''}`}
     >
       {children}
     </View>

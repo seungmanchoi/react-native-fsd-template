@@ -33,7 +33,7 @@ export function AppText({
   return (
     <Text 
       style={[color ? { color } : null, style]}
-      className={\`\${getVariantStyle()} \${className || ''}\`}
+      className={`${getVariantStyle()} ${className || ''}`}
     >
       {children}
     </Text>

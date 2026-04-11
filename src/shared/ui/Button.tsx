@@ -55,7 +55,7 @@ export function Button({
     if (variant === 'secondary') color = "text-primary dark:text-primary-dark";
     if (variant === 'outline' || variant === 'ghost') color = "text-primary dark:text-primary-dark";
     
-    return \`\${base} \${sizeStyle} \${color}\`;
+    return `${base} ${sizeStyle} ${color}`;
   };
 
   return (
@@ -63,14 +63,14 @@ export function Button({
       onPress={onPress}
       disabled={isDisabled}
       style={style}
-      className={\`
+      className={`
         flex-row items-center justify-center rounded-xl
-        \${getVariantStyle()}
-        \${getSizeStyle()}
-        \${fullWidth ? 'w-full' : ''}
-        \${isDisabled ? 'opacity-50' : 'active:opacity-80'}
-        \${className || ''}
-      \`}
+        ${getVariantStyle()}
+        ${getSizeStyle()}
+        ${fullWidth ? 'w-full' : ''}
+        ${isDisabled ? 'opacity-50' : 'active:opacity-80'}
+        ${className || ''}
+      `}
     >
       {loading ? (
         <ActivityIndicator
