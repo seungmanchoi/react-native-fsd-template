@@ -53,4 +53,13 @@ export const ADS_CONFIG = {
   INTERSTITIAL_COOLDOWN_MS: 60_000,
   MAX_INTERSTITIALS_PER_DAY: 10,
   FIRST_AD_DELAY_MS: 180_000,
+  /** Duration of premium access granted by a rewarded ad (ms) */
+  REWARDED_PREMIUM_DURATION_MS: 30 * 60_000, // 30 minutes
+  /** Interval to check premium expiry while app is in foreground (ms) */
+  PREMIUM_CHECK_INTERVAL_MS: 10_000, // 10 seconds
+  /** AsyncStorage keys */
+  STORAGE_KEYS: {
+    AD_STATE: '@ads/ad_state',
+    PREMIUM_STATE: '@ads/premium_state',
+  },
 } as const;

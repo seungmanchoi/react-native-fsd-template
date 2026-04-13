@@ -8,7 +8,14 @@ import Toast from 'react-native-toast-message';
 import mobileAds from 'react-native-google-mobile-ads';
 import { QueryProvider, ThemeProvider } from '@core/providers';
 import { toastConfig, ErrorBoundary } from '@shared/ui';
+import { useAdLifecycle, useAppOpenAd, AdDevPanel } from '@/features/ads';
 import '../global.css';
+
+function AdLifecycleManager(): null {
+  useAdLifecycle();
+  useAppOpenAd();
+  return null;
+}
 
 export default function RootLayout(): React.JSX.Element {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -42,10 +49,12 @@ export default function RootLayout(): React.JSX.Element {
           <QueryProvider>
             <ThemeProvider>
               <StatusBar style="light" />
+              <AdLifecycleManager />
               <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="(auth)" />
                 <Stack.Screen name="(tabs)" />
               </Stack>
+              <AdDevPanel />
               <Toast config={toastConfig} />
             </ThemeProvider>
           </QueryProvider>
