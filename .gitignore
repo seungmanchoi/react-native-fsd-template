@@ -28,6 +28,13 @@ web-build/
 ios/
 android/
 
+# Fastlane store metadata
+!fastlane/metadata/
+!fastlane/metadata/ios/
+!fastlane/metadata/ios/**
+!fastlane/metadata/android/
+!fastlane/metadata/android/**
+
 # Screenshots (keep in repo for store deployment)
 !screenshots/**
 
@@ -41,6 +48,14 @@ android/
 /*.png
 
 # Agent workspace (inter-agent data exchange)
-_workspace/*.ipa
+_workspace/
+
+# Build artifacts
 *.aab
-\n# Workspace\n_workspace/\nbuild-output/
+*.ipa
+
+# Fastlane generated reports
+fastlane/report.xml
+
+# Build output
+build-output/
