@@ -44,12 +44,13 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       },
     },
     plugins: [
-      // TODO: Replace with actual AdMob App IDs from AdMob Console
+      // Google AdMob test app IDs — safe for development/simulator
+      // Replace with real IDs from AdMob Console before production build
       [
         'react-native-google-mobile-ads',
         {
-          androidAppId: 'ca-app-pub-XXXXX~YYYYY',
-          iosAppId: 'ca-app-pub-XXXXX~ZZZZZ',
+          androidAppId: 'ca-app-pub-3940256099942544~3347511713',
+          iosAppId: 'ca-app-pub-3940256099942544~1458002511',
         },
       ],
       'expo-router',
