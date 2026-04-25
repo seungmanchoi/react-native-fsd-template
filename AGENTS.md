@@ -74,6 +74,20 @@ These are fail conditions:
 | Missing safe area handling in screens | 0 |
 | Missing barrel exports | 0 |
 | Broken NativeWind setup | 0 |
+| `toISOString().split('T')[0]` for local date | 0 |
+
+### Date and Time Handling
+
+Use `dayjs` for all date and time operations. `dayjs()` returns device local time, which is correct for user-facing dates. Never use `new Date().toISOString().split('T')[0]` as a local date — it returns UTC, which is wrong in UTC+N timezones between midnight and the offset hours.
+
+| Use case | Correct | Forbidden |
+| --- | --- | --- |
+| Today (YYYY-MM-DD) | `dayjs().format('YYYY-MM-DD')` | `new Date().toISOString().split('T')[0]` |
+| N days ago | `dayjs().subtract(N, 'day').format('YYYY-MM-DD')` | Manual Date arithmetic |
+| Current hour | `dayjs().hour()` | `new Date().getUTCHours()` |
+| Timestamp storage | `new Date().toISOString()` | Local time strings |
+
+Store dates in Zustand as `YYYY-MM-DD` strings or ISO timestamps. Never persist `Date` objects.
 
 After implementation changes, run:
 

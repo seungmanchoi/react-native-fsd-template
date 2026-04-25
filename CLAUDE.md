@@ -40,6 +40,24 @@ React Native + Expo template with **Feature-Sliced Design (FSD)** architecture a
 | SafeAreaView 누락 (스크린) | **0개** |
 | barrel export 누락 | **0개** |
 | NativeWind 설정 누락 | **0개** |
+| `toISOString().split('T')[0]`로 로컬 날짜 구하기 | **0개** |
+
+### 날짜/시간 처리 (CRITICAL)
+
+모든 날짜/시간 처리는 `dayjs`를 사용하고, 아래 규칙을 반드시 따른다. `new Date()` 기반 날짜 계산은 UTC/로컬 시간대 혼동을 일으키므로 금지한다.
+
+| 상황 | 올바른 방법 | 금지하는 방법 |
+|------|-----------|-------------|
+| 오늘 날짜 (YYYY-MM-DD) | `dayjs().format('YYYY-MM-DD')` | `new Date().toISOString().split('T')[0]` |
+| N일 전 날짜 | `dayjs().subtract(N, 'day').format('YYYY-MM-DD')` | `new Date(Date.now() - N * 86400000)` |
+| 현재 시각 (시/분) | `dayjs().hour()`, `dayjs().minute()` | `new Date().getUTCHours()` |
+| 타임스탬프 저장 | `new Date().toISOString()` (createdAt 등) | 로컬 시간 문자열 |
+
+**핵심 원칙:**
+- `dayjs()`는 디바이스 로컬 시간을 반환한다 → 사용자 대면 날짜/시간에 사용
+- `new Date().toISOString()`은 UTC를 반환한다 → 정렬/비교용 타임스탬프에만 사용
+- **절대 `toISOString().split('T')[0]`으로 "오늘 날짜"를 구하지 않는다** — UTC 기준이므로 한국(+9)/일본(+9) 시간대에서 자정~09시 사이에 "어제" 날짜가 반환됨
+- Zustand persist store에 날짜를 저장할 때는 `YYYY-MM-DD` 문자열 또는 ISO 타임스탬프만 사용 (Date 객체 금지)
 
 ### ESLint 9 (Flat Config) & FlashList v2 (CRITICAL)
 

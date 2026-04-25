@@ -41,8 +41,10 @@
 - [ ] XSS 방지
 
 ### 6. Common Bug Patterns
-- [ ] **날짜 타임존 버그**: `new Date().toISOString().split('T')[0]` 사용 금지 — UTC 기준이라 UTC+N 지역에서 날짜가 하루 밀림. 반드시 `getFullYear()/getMonth()/getDate()` 기반 로컬 시간 사용. 공통 유틸(`shared/lib/date.ts` 등)로 통일할 것
+- [ ] **날짜 타임존 버그**: `new Date().toISOString().split('T')[0]`로 로컬 날짜를 구하는 코드 금지 — UTC 기준이라 UTC+9(한국/일본) 지역에서 자정~09시 사이에 "어제" 날짜가 반환됨. 반드시 `dayjs().format('YYYY-MM-DD')` 사용 (로컬 시간 기준)
+- [ ] `new Date()` 기반 날짜 계산(subtract, add) 금지 — `dayjs().subtract(N, 'day')` 사용
 - [ ] 날짜 키(`YYYY-MM-DD`) 생성 로직이 여러 곳에 중복되어 있지 않은지 확인
+- [ ] Zustand persist store에 `Date` 객체 저장 금지 — ISO 문자열 또는 YYYY-MM-DD만 허용
 
 ## Hard Thresholds (Anthropic Harness Principle)
 
