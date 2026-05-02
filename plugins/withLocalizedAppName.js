@@ -317,7 +317,19 @@ function escapeXml(str) {
 }
 
 function withLocalizedAppName(config, localizedNames) {
-  config = withLocalizedAppNameIOS(config, localizedNames);
+  // iOS 처리는 app.config.ts의 `locales` 필드와 충돌할 수 있다.
+  // Expo의 locales 핸들러가 이미 InfoPlist.strings용 PBXVariantGroup을
+  // 등록하기 때문에, plugin이 또 다른 variant group을 추가하면 빌드 시
+  // "Multiple commands produce InfoPlist.strings" 에러가 발생한다.
+  //
+  // 따라서 `config.locales`가 비어 있을 때만 plugin이 iOS를 직접 처리한다.
+  // `locales`를 사용한다면 각 언어 JSON 파일에 `CFBundleDisplayName` 키를
+  // 직접 추가해야 한다.
+  const hasExpoLocales =
+    config.locales && Object.keys(config.locales).length > 0;
+  if (!hasExpoLocales) {
+    config = withLocalizedAppNameIOS(config, localizedNames);
+  }
   config = withLocalizedAppNameAndroid(config, localizedNames);
   return config;
 }
